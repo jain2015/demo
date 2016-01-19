@@ -18,7 +18,7 @@
         android:layout_height="100dp"
         android:id="@+id/imageView"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/alarm_logo" />
+        android:src="@drawable/clock_xhdpi" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,10 +35,10 @@
         android:text="New ToggleButton"
         android:id="@+id/toggleButton"
         android:layout_below="@+id/textView"
-        android:layout_marginTop="70dp"
         android:layout_alignLeft="@+id/imageView"
         android:layout_alignStart="@+id/imageView"
         android:background="@drawable/toggle_selector"
         android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_alignEnd="@+id/imageView"
+        android:layout_marginTop="100dp" />
 </RelativeLayout>
