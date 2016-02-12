@@ -24,6 +24,27 @@ public class MovieService {
 
     private final String LOG_TAG = MovieService.class.getSimpleName();
 
+    final String RESULTS = "results";
+    final String POSTER_PATH = "poster_path";
+    final String ID = "id";
+    final String ORIGINAL_TITLE = "original_title";
+    final String OVERVIEW = "overview";
+    final String RELEASE_DATE = "release_date";
+    final String USER_VOTE = "vote_average";
+
+    final String KEY = "key";
+    final String NAME = "name";
+    final String SITE = "site";
+
+    final String AUTHOR = "author";
+    final String CONTENT = "content";
+
+    final String IMAGE_BASE_URL="http://image.tmdb.org/t/p/w185";
+    final String MOVIE_BASE_URL = "http://api.themoviedb.org/3";
+    final String SORTBY_PARAM = "sort_by";
+    final String APPID = "api_key";
+    final String appid = "590e44278fc96621798bcff64fd36990";
+
     public ArrayList<Movie> getMovieData()
     {
         // These two need to be declared outside the try/catch
@@ -35,56 +56,24 @@ public class MovieService {
         ArrayList<Movie> movies = new ArrayList<>();
         String sort_by = "popularity.desc";
         String appid = "590e44278fc96621798bcff64fd36990";
-
-
         try {
-            final String IMAGE_BASE_URL="http://image.tmdb.org/t/p/w185";
-            final String FORECAST_BASE_URL = "http://api.themoviedb.org/3";
-            final String SORTBY_PARAM = "sort_by";
-            final String APPID = "api_key";
 
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendEncodedPath("discover/movie")
                     .appendQueryParameter(SORTBY_PARAM, sort_by )
                     .appendQueryParameter(APPID, appid)
                     .build();
             URL url = new URL(builtUri.toString());
             Log.v(LOG_TAG, "Built Uri" + builtUri.toString());
-
-            // Create the request to OpenWeatherMap, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return movies;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
-            }
-
-            String  data = buffer.toString();
-            Log.e(LOG_TAG, data);
+             String data = getResponse(url.toString());
 
             if(data.contains("status_message")){
                 return null;
             }
 
-            final String OWM_RESULTS = "results";
-            final String OWM_POSTERPATH = "poster_path";
-            final String OWM_TITLE = "title";
+
             JSONObject forecastJson = new JSONObject(data);
-            JSONArray resultArray = forecastJson.getJSONArray(OWM_RESULTS);
+            JSONArray resultArray = forecastJson.getJSONArray(RESULTS);
 
             for (int i = 0; i < resultArray.length(); i++) {
 
@@ -95,9 +84,9 @@ public class MovieService {
                 String title;
                 String poster_path_image_url;
 
-                poster_path = MovieObject.getString(OWM_POSTERPATH);
+                poster_path = MovieObject.getString(POSTER_PATH);
                 poster_path_image_url = IMAGE_BASE_URL+poster_path;
-                title = MovieObject.getString(OWM_TITLE);
+                title = MovieObject.getString(ORIGINAL_TITLE);
 
                 Movie movie = new Movie();
                 movie.setPosterimage(poster_path_image_url);
@@ -126,6 +115,99 @@ public class MovieService {
                 }
             }
         }
+        return null;
+    }
+
+    public Movie getMovieDetail(String id){
+
+        Uri url = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendEncodedPath("movie")
+                .appendQueryParameter("api_key", APPID)
+                .appendQueryParameter("sort_by", id)
+                .build();
+
+        String response = getResponse(url.toString());
+
+        try {
+            Movie movie = getMovieFromJson(response);
+            return movie;
+        } catch (JSONException jsonEx) {
+            Log.e(LOG_TAG, jsonEx.getMessage());
+        }
+
+        return null;
+
+    }
+
+    public Movie getMovieFromJson(String movieJsonString) throws JSONException{
+        ArrayList<Movie> movies = new ArrayList<Movie>();
+        JSONObject movieObject = new JSONObject(movieJsonString);
+
+        String poster_path_image_url = IMAGE_BASE_URL + movieObject.getString(POSTER_PATH);
+        int id = movieObject.getInt(ID);
+        String name = movieObject.getString(ORIGINAL_TITLE);
+        String overview = movieObject.getString(OVERVIEW);
+        String releaseDate = movieObject.getString(RELEASE_DATE);
+        String rating = movieObject.getString(USER_VOTE);
+
+        Movie movie = new Movie();
+        movie.setPosterimage(poster_path_image_url);
+        movie.setName(name);
+        movie.setId(id);
+        movie.setOverview(overview);
+        movie.setRating(rating);
+        movie.setReleaseDate(releaseDate);
+        movies.add(movie);
+        return movie;
+    }
+
+
+    private String getResponse(String endPoint) {
+
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        try {
+            URL url = new URL(endPoint);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            // Read the input stream into a String
+            InputStream inputStream = urlConnection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            if (inputStream == null) {
+                // Nothing to do.
+                return null;
+            }
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+
+            if (buffer.length() == 0) {
+                // Stream was empty.  No point in parsing.
+                return null;
+            }
+            return buffer.toString();
+        }catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+        } finally{
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+
         return null;
     }
 

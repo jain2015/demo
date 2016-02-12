@@ -1,36 +1,19 @@
 package com.example.priyanka.themovieapplication;
 
-import android.net.Uri;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.R.integer;
-import android.widget.ListView;
-import android.widget.Toast;
-
-
 import com.example.priyanka.themovieapplication.model.Movie;
 import com.example.priyanka.themovieapplication.service.MovieService;
-
-import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,27 +27,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         FetchMovieList fetch_movie_list = new FetchMovieList();
         fetch_movie_list.execute();
 
-        ArrayList<Movie> movies = new ArrayList<>();
-        GridView gv = (GridView) findViewById(R.id.gridView);
+        final ArrayList<Movie> movies = new ArrayList<>();
+        final GridView gv = (GridView) findViewById(R.id.gridView);
         mAdapter = new Adapter(this,R.layout.grid_item,movies);
         gv.setAdapter(mAdapter);
+
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            final String EXTRA_TEXT= "id";
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "Image" + position, Toast.LENGTH_SHORT).show();
-
+                Movie movie = (Movie) gv.getAdapter().getItem(position);
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra(EXTRA_TEXT,movie.getId());
+                startActivity(intent);
             }
         });
-        //     Set Data to Gridview
-//        GridView gv = (GridView) findViewById(R.id.gridView);
-//        ArrayAdapter<String> adapter = (ArrayAdapter) new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, poster_image);
-//        gv.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
