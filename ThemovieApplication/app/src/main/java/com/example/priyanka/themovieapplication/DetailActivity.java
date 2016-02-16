@@ -1,12 +1,16 @@
 package com.example.priyanka.themovieapplication;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,51 +18,30 @@ import com.example.priyanka.themovieapplication.model.Movie;
 import com.example.priyanka.themovieapplication.service.MovieService;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 
 
 public class DetailActivity extends AppCompatActivity {
+    ImageView mImageView = null;
+    TextView mNameView = null;
+    TextView mRatingView = null;
+    TextView mReleaseDate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        String movie_id=null;
+        FetchMovieDetail fetch_movie_detail = new FetchMovieDetail();
 
-        Intent intent = this.getIntent();
+        String id = getIntent().getStringExtra("id");
 
-        if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT)){
-            movie_id= intent.getStringExtra(intent.EXTRA_TEXT);
-        }
-
-        MovieService MovieService=new MovieService();
-        Movie mMovie=MovieService.getMovieDetail(movie_id);
-
-
-        ImageView mImageView = (ImageView) findViewById(R.id.detailImageView);
-        TextView mNameView = (TextView) findViewById(R.id.detailTitle);
-//        mOverviewView = (TextView) view.findViewById(R.id.detail_overview);
-//        mReleaseDateView = (TextView) view.findViewById(R.id.detail_release_date);
-//        mRatingView = (TextView) view.findViewById(R.id.detail_rating);
-//        mFavourite = (ImageButton) view.findViewById(R.id.favourite_button);
-
-//        mTrailersView = (TextView) view.findViewById(R.id.detail_trailers);
-//        mVideoListView = (ListView) view.findViewById(R.id.video_list_view);
-
-//        mReviewView = (TextView) view.findViewById(R.id.detail_reviews);
-//        mReviewListView = (ListView) view.findViewById(R.id.review_list_view);
-
-
-        mNameView.setText(mMovie.getName());
-        Picasso.with(this).load(mMovie.getPosterimage()).into(mImageView);
-
-//        mOverviewView.setText(mMovie.overview);
-//        mReleaseDateView.setText(getString(R.string.label_relase) + mMovie.releaseDate);
-//        mRatingView.setText(getString(R.string.label_rating) + mMovie.rating);
-
-
-//        if(!isTaskRunning && mMovie.id > 0)
-//            new FetchVideoTask(this).execute(String.valueOf(mMovie.id));
+        mImageView = (ImageView) findViewById(R.id.detailImageView);
+        mNameView = (TextView) findViewById(R.id.detailTitle);
+        mRatingView=(TextView) findViewById(R.id.detailRating);
+        mReleaseDate=(TextView) findViewById(R.id.detailReleaseDate);
+        fetch_movie_detail.execute(id);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,5 +55,51 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class FetchMovieDetail extends AsyncTask<String, Void, Movie> {
+
+
+        @Override
+        protected Movie doInBackground(String... params) {
+            String movie_id = params[0];
+            MovieService MovieService = new MovieService();
+            Movie mMovie = MovieService.getMovieDetail(movie_id);
+            return mMovie;
+        }
+
+
+        @Override
+        protected void onPostExecute(Movie movies) {
+            if (movies != null) {
+                mNameView.setText(movies.getName());
+                mRatingView.setText(movies.getRating());
+                mReleaseDate.setText(movies.getReleaseDate());
+                Picasso.with(getBaseContext()).load(movies.getPosterimage()).into(mImageView);
+            }
+        }
     }
 }

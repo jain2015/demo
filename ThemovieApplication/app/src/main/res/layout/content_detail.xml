@@ -23,11 +23,37 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="Movie Name"
         android:id="@+id/detailTitle"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/detailImageView"
-        android:layout_toEndOf="@+id/detailImageView"
         android:textSize="20dp"
         android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="9.6"
+        android:id="@+id/detailRating"
+        android:layout_toRightOf="@+id/detailImageView"
+        android:layout_alignBottom="@+id/detailTitle"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2015-06-09"
+        android:id="@+id/detailReleaseDate"
+        android:layout_below="@+id/detailRating"
+        android:layout_toRightOf="@+id/detailImageView"
+        android:layout_marginTop="20dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:layout_below="@+id/detailReleaseDate"
+        android:layout_toRightOf="@+id/detailImageView"
+        android:layout_toEndOf="@+id/detailImageView" />
+
 </RelativeLayout>

@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
 import java.util.ArrayList;
 
 /**
@@ -39,14 +41,15 @@ public class MovieService {
     final String AUTHOR = "author";
     final String CONTENT = "content";
 
-    final String IMAGE_BASE_URL="http://image.tmdb.org/t/p/w185";
-    final String MOVIE_BASE_URL = "http://api.themoviedb.org/3";
+    final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185";
+
     final String SORTBY_PARAM = "sort_by";
     final String APPID = "api_key";
     final String appid = "590e44278fc96621798bcff64fd36990";
 
-    public ArrayList<Movie> getMovieData()
-    {
+
+    public ArrayList<Movie> getMovieData() {
+        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3";
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
@@ -55,19 +58,18 @@ public class MovieService {
         // Will contain the raw JSON response as a string.
         ArrayList<Movie> movies = new ArrayList<>();
         String sort_by = "popularity.desc";
-        String appid = "590e44278fc96621798bcff64fd36990";
         try {
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendEncodedPath("discover/movie")
-                    .appendQueryParameter(SORTBY_PARAM, sort_by )
+                    .appendQueryParameter(SORTBY_PARAM, sort_by)
                     .appendQueryParameter(APPID, appid)
                     .build();
             URL url = new URL(builtUri.toString());
             Log.v(LOG_TAG, "Built Uri" + builtUri.toString());
-             String data = getResponse(url.toString());
+            String data = getResponse(url.toString());
 
-            if(data.contains("status_message")){
+            if (data.contains("status_message")) {
                 return null;
             }
 
@@ -83,27 +85,28 @@ public class MovieService {
                 String poster_path;
                 String title;
                 String poster_path_image_url;
+                String id;
 
                 poster_path = MovieObject.getString(POSTER_PATH);
-                poster_path_image_url = IMAGE_BASE_URL+poster_path;
+                id = MovieObject.getString(ID);
+                poster_path_image_url = IMAGE_BASE_URL + poster_path;
                 title = MovieObject.getString(ORIGINAL_TITLE);
 
                 Movie movie = new Movie();
                 movie.setPosterimage(poster_path_image_url);
                 movie.setName(title);
-
+                movie.setId(id);
                 movies.add(movie);
             }
-
             return movies;
 
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
-        }  catch (JSONException e) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
-        }finally {
+        } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
@@ -118,33 +121,56 @@ public class MovieService {
         return null;
     }
 
-    public Movie getMovieDetail(String id){
+    public Movie getMovieDetail(String id) {
 
-        Uri url = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                .appendEncodedPath("movie")
-                .appendQueryParameter("api_key", APPID)
-                .appendQueryParameter("sort_by", id)
-                .build();
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
 
-        String response = getResponse(url.toString());
-
+        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3";
         try {
-            Movie movie = getMovieFromJson(response);
+
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                    .appendEncodedPath("movie")
+                    .appendEncodedPath(id)
+                    .appendQueryParameter(APPID, appid)
+                    .build();
+
+            URL url = new URL(builtUri.toString());
+
+            Log.v(LOG_TAG, "Built Uri" + builtUri.toString());
+
+            String data = getResponse(url.toString());
+
+            Movie movie = getMovieFromJson(data);
+
             return movie;
-        } catch (JSONException jsonEx) {
-            Log.e(LOG_TAG, jsonEx.getMessage());
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
         }
 
         return null;
 
     }
 
-    public Movie getMovieFromJson(String movieJsonString) throws JSONException{
-        ArrayList<Movie> movies = new ArrayList<Movie>();
+    public Movie getMovieFromJson(String movieJsonString) throws JSONException {
+
         JSONObject movieObject = new JSONObject(movieJsonString);
 
         String poster_path_image_url = IMAGE_BASE_URL + movieObject.getString(POSTER_PATH);
-        int id = movieObject.getInt(ID);
         String name = movieObject.getString(ORIGINAL_TITLE);
         String overview = movieObject.getString(OVERVIEW);
         String releaseDate = movieObject.getString(RELEASE_DATE);
@@ -153,11 +179,10 @@ public class MovieService {
         Movie movie = new Movie();
         movie.setPosterimage(poster_path_image_url);
         movie.setName(name);
-        movie.setId(id);
         movie.setOverview(overview);
         movie.setRating(rating);
         movie.setReleaseDate(releaseDate);
-        movies.add(movie);
+
         return movie;
     }
 
@@ -193,9 +218,9 @@ public class MovieService {
                 return null;
             }
             return buffer.toString();
-        }catch (IOException e) {
+        } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-        } finally{
+        } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
@@ -207,7 +232,6 @@ public class MovieService {
                 }
             }
         }
-
         return null;
     }
 

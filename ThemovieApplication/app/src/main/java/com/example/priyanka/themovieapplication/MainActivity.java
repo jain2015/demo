@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
         gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             final String EXTRA_TEXT= "id";
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie movie = (Movie) gv.getAdapter().getItem(position);
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                intent.putExtra(EXTRA_TEXT,movie.getId());
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class).putExtra(EXTRA_TEXT,movie.getId());
                 startActivity(intent);
             }
         });
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<Movie> doInBackground(Void... params) {
-
             MovieService movie_service = new MovieService();
             return movie_service.getMovieData();
 

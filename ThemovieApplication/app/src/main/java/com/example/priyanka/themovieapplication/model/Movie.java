@@ -6,16 +6,16 @@ public class Movie {
 
     private String posterimage;
     private String name;
-    private int id;
+    private String id;
     private String overview;
     private String releaseDate;
     private String rating;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
