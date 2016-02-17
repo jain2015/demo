@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.priyanka.themovieapplication.model.Movie;
+import com.example.priyanka.themovieapplication.model.Review;
+import com.example.priyanka.themovieapplication.model.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,8 +165,8 @@ public class MovieService {
         }
 
         return null;
-
     }
+
 
     public Movie getMovieFromJson(String movieJsonString) throws JSONException {
 
@@ -184,6 +186,98 @@ public class MovieService {
         movie.setReleaseDate(releaseDate);
 
         return movie;
+    }
+
+
+    public ArrayList<Video> getVideos(String id) {
+        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie";
+        ArrayList<Video> videos = new ArrayList<Video>();
+
+        Uri endPoint = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendEncodedPath(id)
+                .appendEncodedPath("videos")
+                .appendQueryParameter(APPID, appid)
+                .build();
+        Log.v(LOG_TAG, "Built Uri" + endPoint.toString());
+
+        String response = getResponse(endPoint.toString());
+
+        try {
+            if(response != null)
+                videos = getVideosFromJson(response);
+        } catch (JSONException jsonEx) {
+            Log.e(LOG_TAG, jsonEx.getMessage());
+        }
+
+        return videos;
+    }
+
+    private ArrayList<Video> getVideosFromJson(String videoDataString) throws JSONException {
+
+        ArrayList<Video> vidoes = new ArrayList<>();
+
+        JSONObject videoJson = new JSONObject(videoDataString);
+        JSONArray videoArray = videoJson.getJSONArray(RESULTS);
+
+        for(int i=0; i<videoArray.length(); i++) {
+            JSONObject movieObject = videoArray.getJSONObject(i);
+
+            Video video = new Video();
+
+            video.setId(movieObject.getString(ID));
+            video.setName(movieObject.getString(NAME));
+            video.setKey(movieObject.getString(KEY));
+            video.setThumbnail(String.format("http://img.youtube.com/vi/%s/1.jpg", video.getKey()));;
+            video.setSite(movieObject.getString(SITE));
+
+            vidoes.add(video);
+        }
+
+        return vidoes;
+    }
+
+    public ArrayList<Review> getReviews(String id) {
+        final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie";
+        ArrayList<Review> reviews = new ArrayList<Review>();
+
+        Uri endPoint = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendEncodedPath(id)
+                .appendEncodedPath("reviews")
+                .appendQueryParameter(APPID, appid)
+                .build();
+        Log.v(LOG_TAG, "Built Uri" + endPoint.toString());
+        String response = getResponse(endPoint.toString());
+
+        try {
+            if(response != null)
+                reviews = getReviewsFromJson(response);
+        } catch (JSONException jsonEx) {
+            Log.e(LOG_TAG, jsonEx.getMessage());
+        }
+
+        return reviews;
+    }
+
+    private ArrayList<Review> getReviewsFromJson(String reviewDataString) throws JSONException {
+
+        ArrayList<Review> reviews = new ArrayList<Review>();
+
+        JSONObject reivewJson = new JSONObject(reviewDataString);
+        JSONArray reviewArray = reivewJson.getJSONArray(RESULTS);
+
+        for(int i=0; i<reviewArray.length(); i++) {
+            JSONObject reviewObject = reviewArray.getJSONObject(i);
+
+            Review review = new Review();
+
+            review.setId(reviewObject.getString(ID));
+            review.setAuthor(reviewObject.getString(AUTHOR));
+            review.setContent(reviewObject.getString(CONTENT));
+
+            reviews.add(review);
+        }
+
+        return reviews;
     }
 
 

@@ -1,7 +1,5 @@
 package com.example.priyanka.themovieapplication.model;
 
-import android.widget.BaseAdapter;
-
 public class Movie {
 
     private String posterimage;

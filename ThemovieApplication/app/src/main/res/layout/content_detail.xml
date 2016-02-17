@@ -10,7 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.priyanka.themovieapplication.DetailActivity"
-    tools:showIn="@layout/activity_detail">
+    tools:showIn="@layout/activity_detail"
+    android:id="@+id/detail">
 
     <ImageView
         android:layout_width="200dp"
@@ -18,7 +19,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/detailImageView" />
+        android:id="@+id/detailImageView"
+        android:layout_marginRight="7dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -36,8 +38,9 @@
         android:text="9.6"
         android:id="@+id/detailRating"
         android:layout_toRightOf="@+id/detailImageView"
-        android:layout_alignBottom="@+id/detailTitle"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@+id/detailTitle"
+        android:textColor="#070707"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,8 +48,7 @@
         android:text="2015-06-09"
         android:id="@+id/detailReleaseDate"
         android:layout_below="@+id/detailRating"
-        android:layout_toRightOf="@+id/detailImageView"
-        android:layout_marginTop="20dp" />
+        android:layout_toRightOf="@+id/detailImageView" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -54,6 +56,46 @@
         android:id="@+id/imageButton"
         android:layout_below="@+id/detailReleaseDate"
         android:layout_toRightOf="@+id/detailImageView"
-        android:layout_toEndOf="@+id/detailImageView" />
+        android:layout_toEndOf="@+id/detailImageView"
+        android:src="@drawable/ic_star_border_black_24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The image’s larger dimension (height here) should be scaled to match ImageView's bounding area (250dp). The aspect ratio should be respected and the image must stay inside the ImageView area. Red lines illustrate the biggest issue original question author had: ImageView doesn’t match new dimensions of the image."
+        android:id="@+id/detailOverview"
+        android:layout_below="@+id/detailImageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="7dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/detailVideolistView"
+        android:layout_below="@+id/detailOverview"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="7dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reviews"
+        android:id="@+id/detailReviewTitle"
+        android:layout_below="@id/detailVideolistView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textStyle="bold"
+        android:textSize="15dp" />
+
+    <ListView
+        android:id="@+id/detailReviewListView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/detailReviewTitle"
+        android:divider="#b5b5b5"
+        android:paddingLeft="10dp"
+        android:dividerHeight="2dp"></ListView>
 
 </RelativeLayout>
