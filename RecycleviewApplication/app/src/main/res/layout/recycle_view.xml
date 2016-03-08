@@ -1,0 +1,95 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.example.priyanka.firstscreeapplication.MainActivityFragment"
+        tools:showIn="@layout/activity_main"
+        android:background="#eeebeb">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cv"
+            app:cardElevation="3dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                >
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal">
+                    <ImageView
+                        android:id="@+id/banner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="260dp"
+                        android:background="#100e0e" />
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/banner"
+                        android:text="Hyundai introduce fuel efficient engine range"
+                        android:textColor="#2f2e2e"
+                        android:textIsSelectable="false"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:autoText="true"
+                        android:background="#ffffff"
+                        android:phoneNumber="true"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="15dp"
+                        android:paddingLeft="15dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="#ffffff">
+                    <TextView
+                        android:id="@+id/subtext"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/banner"
+                        android:text="27 sept"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:layout_gravity="bottom|right"
+                        android:paddingLeft="15dp"
+                        android:paddingBottom="15dp" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageView2"
+                        android:src="@drawable/ic_favorite_black_24dp"
+                        android:baselineAlignBottom="false"
+                        android:clickable="false"
+                        android:contextClickable="false"
+                        android:cropToPadding="false"
+                        android:visibility="visible"
+                        android:layout_marginLeft="40dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>
